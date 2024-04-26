@@ -40,6 +40,17 @@ export default {
     const searchText = ref("");
     const error = ref("");
 
+    const getTodos = async () => {
+      try {
+        const res = await axios.get("http://localhost:3000/todos");
+        todos.value = res.data;
+      } catch (err) {
+        error.value = err.message;
+      }
+    };
+
+    getTodos();
+
     const filterTodos = computed(() => {
       if (searchText.value) {
         return todos.value.filter((todo) => {
@@ -64,16 +75,36 @@ export default {
       }
     };
 
-    const toggleTodo = (index) => {
-      todos.value[index].completed = !todos.value[index].completed;
+    const toggleTodo = async (dbTodo) => {
+      try {
+        await axios.patch(`http://localhost:3000/todos/${dbTodo.id}`, {
+          completed: !dbTodo.completed,
+        });
+
+        todos.value.forEach((todo, index) => {
+          if (todo.id === dbTodo.id) {
+            todos.value[index].completed = !todos.value[index].completed;
+          }
+        });
+      } catch (err) {
+        error.value = err.message;
+      }
     };
 
-    const deleteTodo = (todoId) => {
-      todos.value.forEach((todo, index) => {
-        if (todoId === todo.id) {
-          todos.value.splice(index, 1);
-        }
-      });
+    const deleteTodo = async (todoId) => {
+      try {
+        await axios.delete(`http://localhost:3000/todos/${todoId}`);
+
+        todos.value.forEach((todo, index) => {
+          if (todoId === todo.id) {
+            todos.value.splice(index, 1);
+          }
+        });
+
+        error.value = "";
+      } catch (err) {
+        error.value = err.message;
+      }
     };
 
     return {

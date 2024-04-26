@@ -2,14 +2,14 @@
   <ul class="pt-10" v-if="todos.length">
     <li
       class="todo-item flex flex-row mb-2 p-2 px-4 bg-[#e9eefc] text-sm rounded-md"
-      v-for="(todo, index) in todos"
+      v-for="todo in todos"
       :key="todo.id"
     >
       <label class="inline-flex items-center cursor-pointer">
         <input
           type="checkbox"
           :value="todo.completed"
-          @change="toggleTodo(index)"
+          @change="toggleTodo(todo)"
           class="w-4 h-4 mr-2 border rounded-none"
         />
         <strong v-if="todo.completed" class="pr-2">완료🎉</strong>
@@ -37,8 +37,8 @@ export default {
   },
   emits: ["toggle-todo", "delete-todo"],
   setup(props, { emit }) {
-    const toggleTodo = (index) => {
-      emit("toggle-todo", index);
+    const toggleTodo = (todo) => {
+      emit("toggle-todo", todo);
     };
 
     const deleteTodo = (todoId) => {
