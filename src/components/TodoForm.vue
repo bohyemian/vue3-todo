@@ -3,7 +3,7 @@
     <form class="flex w-full" @submit.prevent="onSubmit">
       <input
         type="text"
-        class="flex-1 p-3 px-4 border border-[#90a8ed] text-bold rounded"
+        class="flex-1 p-3 px-4 border-4 border-[#90a8ed] text-bold rounded"
         placeholder="todo를 작성해 주세요."
         v-model="todo"
         @blur="hideError"

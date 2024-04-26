@@ -1,6 +1,6 @@
 <template>
   <div class="max-w-[640px] mx-auto px-8">
-    <h1 class="pt-10 pb-8 text-4xl font-bold text-neutral-600">Todo List</h1>
+    <h1 class="pt-10 pb-8 text-4xl font-bold text-neutral-500">📋Todo List</h1>
     <input
       type="text"
       class="w-full mb-4 p-3 px-4 border border-[#90a8ed] text-bold rounded"
@@ -8,9 +8,15 @@
       v-model="searchText"
     />
     <TodoForm @add-todo="addTodo" />
-    <span class="block py-20 text-center" v-if="!filterTodos.length"
-      >todo가 없습니다. 🙂</span
+    <div
+      :class="{ 'py-20 ': !error.length }"
+      class="text-center"
+      v-if="!filterTodos.length"
     >
+      <span v-if="searchText.length">일치하는 </span>
+      <span v-if="!error.length">todo가 없습니다. 🙂</span>
+    </div>
+    <div class="pt-1 text-red-600" v-if="error.length">{{ error }}🕳️</div>
     <TodoList
       :todos="filterTodos"
       @toggle-todo="toggleTodo"
@@ -20,6 +26,7 @@
 </template>
 <script>
 import { ref, computed } from "vue";
+import axios from "axios";
 import TodoForm from "./components/TodoForm";
 import TodoList from "./components/TodoList";
 
@@ -31,6 +38,7 @@ export default {
   setup() {
     const todos = ref([]);
     const searchText = ref("");
+    const error = ref("");
 
     const filterTodos = computed(() => {
       if (searchText.value) {
@@ -43,7 +51,18 @@ export default {
     });
 
     const addTodo = (todo) => {
-      todos.value.push(todo);
+      axios
+        .post("http://localhost:3000/todos", {
+          subject: todo.subject,
+          completed: todo.completed,
+        })
+        .then((res) => {
+          todos.value.push(res.data);
+          error.value = "";
+        })
+        .catch((err) => {
+          error.value = err.message;
+        });
     };
 
     const toggleTodo = (index) => {
@@ -66,6 +85,7 @@ export default {
       toggleTodo,
       deleteTodo,
       filterTodos,
+      error,
     };
   },
 };
