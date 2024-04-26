@@ -19,7 +19,7 @@
       </label>
       <button
         type="button"
-        @click="deleteTodo(index)"
+        @click="deleteTodo(todo.id)"
         class="ml-auto py-2 px-3 bg-violet-500 text-white rounded hover:bg-violet-600 transition"
       >
         삭제
@@ -35,13 +35,14 @@ export default {
       required: true,
     },
   },
-  setup(props, context) {
+  emits: ["toggle-todo", "delete-todo"],
+  setup(props, { emit }) {
     const toggleTodo = (index) => {
-      context.emit("toggle-todo", index);
+      emit("toggle-todo", index);
     };
 
-    const deleteTodo = (index) => {
-      context.emit("delete-todo", index);
+    const deleteTodo = (todoId) => {
+      emit("delete-todo", todoId);
     };
 
     return {

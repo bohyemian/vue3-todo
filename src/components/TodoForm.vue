@@ -17,7 +17,6 @@
     <span v-show="hasError" class="absolute py-2 text-xs text-red-600"
       >❌ todo를 입력해 주세요.</span
     >
-    {{ todo }}
   </div>
 </template>
 
@@ -25,7 +24,8 @@
 import { ref } from "vue";
 
 export default {
-  setup(props, context) {
+  emits: ["add-todo"],
+  setup(props, { emit }) {
     const todo = ref("");
     const hasError = ref(false);
 
@@ -38,7 +38,7 @@ export default {
       if (todo.value === "") {
         hasError.value = true;
       } else {
-        context.emit("add-todo", {
+        emit("add-todo", {
           id: Date.now(),
           subject: todo.value,
           completed: false,
