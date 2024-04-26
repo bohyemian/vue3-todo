@@ -1,21 +1,21 @@
 <template>
   <ul class="pt-10" v-if="todos.length">
     <li
-      class="flex flex-row mb-2 p-2 px-4 bg-[#e9eefc] text-sm rounded-md"
+      class="todo-item flex flex-row mb-2 p-2 px-4 bg-[#e9eefc] text-sm rounded-md"
       v-for="(todo, index) in todos"
       :key="todo.id"
     >
-      <label
-        class="inline-flex items-center cursor-pointer"
-        :class="{ 'line-through': todo.completed }"
-      >
+      <label class="inline-flex items-center cursor-pointer">
         <input
           type="checkbox"
           :value="todo.completed"
           @change="toggleTodo(index)"
           class="w-4 h-4 mr-2 border rounded-none"
         />
-        {{ todo.subject }}
+        <strong v-if="todo.completed" class="pr-2">완료🎉</strong>
+        <span :class="{ 'text-neutral-400': todo.completed }">
+          {{ todo.subject }}
+        </span>
       </label>
       <button
         type="button"

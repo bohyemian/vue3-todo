@@ -50,24 +50,22 @@ export default {
       return todos.value;
     });
 
-    const addTodo = (todo) => {
-      axios
-        .post("http://localhost:3000/todos", {
+    const addTodo = async (todo) => {
+      try {
+        const res = await axios.post("http://localhost:3000/todos", {
           subject: todo.subject,
           completed: todo.completed,
-        })
-        .then((res) => {
-          todos.value.push(res.data);
-          error.value = "";
-        })
-        .catch((err) => {
-          error.value = err.message;
         });
+
+        todos.value.push(res.data);
+        error.value = "";
+      } catch (err) {
+        error.value = err.message;
+      }
     };
 
     const toggleTodo = (index) => {
       todos.value[index].completed = !todos.value[index].completed;
-      console.log(todos.value[index].completed);
     };
 
     const deleteTodo = (todoId) => {
