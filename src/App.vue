@@ -42,7 +42,7 @@ export default {
 
     const getTodos = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/todos");
+        const res = await axios.get("https://tomboy.glitch.me/todos");
         todos.value = res.data;
       } catch (err) {
         error.value = err.message;
@@ -63,7 +63,7 @@ export default {
 
     const addTodo = async (todo) => {
       try {
-        const res = await axios.post("http://localhost:3000/todos", {
+        const res = await axios.post("https://tomboy.glitch.me/todos", {
           subject: todo.subject,
           completed: todo.completed,
         });
@@ -77,7 +77,7 @@ export default {
 
     const toggleTodo = async (dbTodo) => {
       try {
-        await axios.patch(`http://localhost:3000/todos/${dbTodo.id}`, {
+        await axios.patch(`https://tomboy.glitch.me/todos/${dbTodo.id}`, {
           completed: !dbTodo.completed,
         });
 
@@ -93,7 +93,7 @@ export default {
 
     const deleteTodo = async (todoId) => {
       try {
-        await axios.delete(`http://localhost:3000/todos/${todoId}`);
+        await axios.delete(`https://tomboy.glitch.me/todos/${todoId}`);
 
         todos.value.forEach((todo, index) => {
           if (todoId === todo.id) {
