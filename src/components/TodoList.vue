@@ -1,7 +1,8 @@
 <template>
   <ul class="pt-10" v-if="todos.length">
     <li
-      class="todo-item flex flex-row mb-2 p-2 px-4 bg-[#e9eefc] text-sm rounded-md"
+      class="flex flex-row mb-2 p-2 px-4 bg-[#e9eefc] text-sm rounded-md"
+      :class="{ 'bg-neutral-100': todo.completed }"
       v-for="todo in todos"
       :key="todo.id"
     >

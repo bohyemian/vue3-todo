@@ -29,7 +29,7 @@ export default {
     const todo = ref("");
     const hasError = ref(false);
 
-    // TODO: input change event로 에러 메시지를 가리고 싶은데 blur 될 때 반영됨
+    // TODO: input change event로 에러 메시지를 가리고 싶은데 blur 될 때 반영됨(한글일 때)
     const hideError = () => {
       hasError.value = false;
     };

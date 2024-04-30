@@ -11,21 +11,53 @@
     <div
       :class="{ 'py-20 ': !error.length }"
       class="text-center"
-      v-if="!filterTodos.length"
+      v-if="!todos.length"
     >
       <span v-if="searchText.length">일치하는 </span>
       <span v-if="!error.length">todo가 없습니다. 🙂</span>
     </div>
     <div class="pt-1 text-red-600" v-if="error.length">{{ error }}🕳️</div>
     <TodoList
-      :todos="filterTodos"
+      :todos="todos"
       @toggle-todo="toggleTodo"
       @delete-todo="deleteTodo"
     />
+    <div class="flex justify-center pt-3" v-if="numberOfPages > 0">
+      <button
+        v-if="currentPage !== 1"
+        class="mr-2 px-2 bg-neutral-300 text-xs rounded"
+        @click="getTodos(currentPage - 1)"
+      >
+        prev
+      </button>
+      <!-- TODO: 조건 한개에 여러개의 클래스 바인딩 -->
+      <button
+        type="button"
+        @click="getTodos(page)"
+        class="items-center justify-center w-7 h-7 bg-neutral-100 text-xs rounded"
+        :class="{
+          'ml-1': page > 1,
+          'bg-blue-200': currentPage === page,
+          'text-white': currentPage === page,
+        }"
+        v-for="page in numberOfPages"
+        :key="page"
+      >
+        {{ page }}
+      </button>
+      <button
+        type="button"
+        v-if="currentPage !== numberOfPages"
+        class="ml-2 px-2 bg-neutral-300 text-xs rounded"
+        @click="getTodos(currentPage + 1)"
+      >
+        next
+      </button>
+    </div>
   </div>
 </template>
 <script>
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import axios from "axios";
 import TodoForm from "./components/TodoForm";
 import TodoList from "./components/TodoList";
@@ -36,14 +68,27 @@ export default {
     TodoList,
   },
   setup() {
+    // const serverUrl = "https://tomboy.glitch.me/todos";
+    const serverUrl = "http://localhost:3000/todos";
     const todos = ref([]);
-    const searchText = ref("");
     const error = ref("");
+    const searchText = ref("");
+    const currentPage = ref(1);
+    const limit = 5;
+    const numberOfTodos = ref(0);
+    const numberOfPages = computed(() => {
+      return Math.ceil(numberOfTodos.value / limit);
+    });
 
-    const getTodos = async () => {
+    const getTodos = async (page = currentPage.value) => {
+      currentPage.value = page;
+
       try {
-        const res = await axios.get("https://tomboy.glitch.me/todos");
+        const res = await axios.get(
+          `${serverUrl}/?subject_like=${searchText.value}&_page=${page}&_limit=${limit}`
+        );
         todos.value = res.data;
+        numberOfTodos.value = res.headers["x-total-count"];
       } catch (err) {
         error.value = err.message;
       }
@@ -51,19 +96,13 @@ export default {
 
     getTodos();
 
-    const filterTodos = computed(() => {
-      if (searchText.value) {
-        return todos.value.filter((todo) => {
-          return todo.subject.includes(searchText.value);
-        });
-      }
-
-      return todos.value;
+    watch(searchText, () => {
+      getTodos(1);
     });
 
     const addTodo = async (todo) => {
       try {
-        const res = await axios.post("https://tomboy.glitch.me/todos", {
+        const res = await axios.post(serverUrl, {
           subject: todo.subject,
           completed: todo.completed,
         });
@@ -77,7 +116,7 @@ export default {
 
     const toggleTodo = async (dbTodo) => {
       try {
-        await axios.patch(`https://tomboy.glitch.me/todos/${dbTodo.id}`, {
+        await axios.patch(`${serverUrl}/${dbTodo.id}`, {
           completed: !dbTodo.completed,
         });
 
@@ -93,7 +132,7 @@ export default {
 
     const deleteTodo = async (todoId) => {
       try {
-        await axios.delete(`https://tomboy.glitch.me/todos/${todoId}`);
+        await axios.delete(`${serverUrl}/${todoId}`);
 
         todos.value.forEach((todo, index) => {
           if (todoId === todo.id) {
@@ -113,8 +152,10 @@ export default {
       addTodo,
       toggleTodo,
       deleteTodo,
-      filterTodos,
       error,
+      getTodos,
+      numberOfPages,
+      currentPage,
     };
   },
 };
