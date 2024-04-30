@@ -68,8 +68,8 @@ export default {
     TodoList,
   },
   setup() {
-    // const serverUrl = "https://tomboy.glitch.me/todos";
-    const serverUrl = "http://localhost:3000/todos";
+    const serverUrl = "https://tomboy.glitch.me/todos";
+    // const serverUrl = "http://localhost:3000/todos";
     const todos = ref([]);
     const error = ref("");
     const searchText = ref("");
@@ -85,7 +85,7 @@ export default {
 
       try {
         const res = await axios.get(
-          `${serverUrl}/?subject_like=${searchText.value}&_page=${page}&_limit=${limit}`
+          `${serverUrl}/?subject_like=${searchText.value}&_sort=id&_order=desc&_page=${page}&_limit=${limit}`
         );
         todos.value = res.data;
         numberOfTodos.value = res.headers["x-total-count"];
@@ -96,8 +96,13 @@ export default {
 
     getTodos();
 
+    let timeout;
     watch(searchText, () => {
-      getTodos(1);
+      clearTimeout(timeout);
+
+      timeout = setTimeout(() => {
+        getTodos(1);
+      }, 1000);
     });
 
     //todo는 자식 컴포넌트에서 전달한 값
