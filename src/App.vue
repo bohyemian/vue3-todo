@@ -100,14 +100,15 @@ export default {
       getTodos(1);
     });
 
+    //todo는 자식 컴포넌트에서 전달한 값
     const addTodo = async (todo) => {
       try {
-        const res = await axios.post(serverUrl, {
+        await axios.post(serverUrl, {
           subject: todo.subject,
           completed: todo.completed,
         });
 
-        todos.value.push(res.data);
+        getTodos(1);
         error.value = "";
       } catch (err) {
         error.value = err.message;
@@ -134,12 +135,7 @@ export default {
       try {
         await axios.delete(`${serverUrl}/${todoId}`);
 
-        todos.value.forEach((todo, index) => {
-          if (todoId === todo.id) {
-            todos.value.splice(index, 1);
-          }
-        });
-
+        getTodos(1);
         error.value = "";
       } catch (err) {
         error.value = err.message;

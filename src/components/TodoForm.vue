@@ -39,7 +39,6 @@ export default {
         hasError.value = true;
       } else {
         emit("add-todo", {
-          id: Date.now(),
           subject: todo.value,
           completed: false,
         });
